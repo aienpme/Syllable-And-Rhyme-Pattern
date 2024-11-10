@@ -47,15 +47,30 @@ textarea {
     margin-left: 10px;
 }
 
-.rhyming-word {
-    padding: 2px 5px;
-    border-radius: 3px;
-    display: inline-block;
-}
-
 .word {
     display: inline-block;
     padding: 2px 5px;
     margin: 0 2px;
     border-radius: 3px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.word:hover {
+    filter: brightness(0.9);
+}
+
+.rhyme-info {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.rhyme-pattern {
+    font-family: monospace;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+    font-size: 0.9em;
 }
