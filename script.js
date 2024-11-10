@@ -1,4 +1,4 @@
-// Syllable counting function with improved accuracy
+// Syllable counting function
 function countSyllables(word) {
     word = word.toLowerCase().replace(/[^a-z]/g, '');
     if (!word) return 0;
@@ -49,9 +49,7 @@ function getRhymeSound(word) {
     }
 
     // Get the stressed syllable sound
-    const vowelPattern = /[aeiouy]+/g;
-    const consonantPattern = /[^aeiouy]+/g;
-    let syllables = baseWord.match(new RegExp(`[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[aeiouy]))`, 'g')) || [];
+    let syllables = baseWord.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[aeiouy]))/g) || [];
     
     if (syllables.length === 0) return baseWord;
     
@@ -124,17 +122,108 @@ function getColorForRhymeGroup(groupIndex) {
     const colors = [
         '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#c5cae9',
         '#bbdefb', '#b3e5fc', '#b2ebf2', '#b2dfdb', '#c8e6c9',
-        '#dcedc8', '#f0f4c3', '#fff9c4', '#ffecb3', '#ffe0b2',
-        '#ffccbc', '#d7ccc8', '#cfd8dc'
+        '#dcedc8', '#f0f4c3', '#fff9c4', '#ffecb3', '#ffe0b2'
     ];
     return colors[groupIndex % colors.length];
+}
+
+// File handling functions
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('textInput').value = e.target.result;
+            updateResults();
+        };
+        reader.readAsText(file);
+    }
+}
+
+function saveToFile() {
+    const text = document.getElementById('textInput').value;
+    if (!text.trim()) {
+        alert('Please enter some text before saving.');
+        return;
+    }
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    const date = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `poem_${date}.txt`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function saveToLocalStorage() {
+    const text = document.getElementById('textInput').value;
+    if (!text.trim()) {
+        alert('Please enter some text before saving.');
+        return;
+    }
+
+    const timestamp = new Date().toISOString();
+    const savedPoems = JSON.parse(localStorage.getItem('savedPoems') || '{}');
+    savedPoems[timestamp] = text;
+    localStorage.setItem('savedPoems', JSON.stringify(savedPoems));
+    alert('Poem saved successfully!');
+}
+
+function loadSavedPoems() {
+    const modal = document.getElementById('savedPoemsModal');
+    const poemsList = document.getElementById('savedPoemsList');
+    const savedPoems = JSON.parse(localStorage.getItem('savedPoems') || '{}');
+
+    poemsList.innerHTML = '';
+    
+    Object.entries(savedPoems).forEach(([timestamp, text]) => {
+        const date = new Date(timestamp).toLocaleDateString();
+        const preview = text.slice(0, 50) + (text.length > 50 ? '...' : '');
+        
+        const div = document.createElement('div');
+        div.className = 'saved-poem-item';
+        div.innerHTML = `
+            <div>
+                <div class="saved-poem-date">${date}</div>
+                <div class="saved-poem-preview">${preview}</div>
+            </div>
+            <div>
+                <button onclick="loadPoem('${timestamp}')" class="load-button">Load</button>
+                <button onclick="deletePoem('${timestamp}')" class="delete-button">Delete</button>
+            </div>
+        `;
+        poemsList.appendChild(div);
+    });
+
+    modal.style.display = 'block';
+}
+
+function loadPoem(timestamp) {
+    const savedPoems = JSON.parse(localStorage.getItem('savedPoems') || '{}');
+    const text = savedPoems[timestamp];
+    if (text) {
+        document.getElementById('textInput').value = text;
+        updateResults();
+        document.getElementById('savedPoemsModal').style.display = 'none';
+    }
+}
+
+function deletePoem(timestamp) {
+    if (confirm('Are you sure you want to delete this poem?')) {
+        const savedPoems = JSON.parse(localStorage.getItem('savedPoems') || '{}');
+        delete savedPoems[timestamp];
+        localStorage.setItem('savedPoems', JSON.stringify(savedPoems));
+        loadSavedPoems();
+    }
 }
 
 function updateResults() {
     const text = document.getElementById('textInput').value;
     const lines = text.split('\n');
     const resultDiv = document.getElementById('result');
-    const rhymeInfoDiv = document.getElementById('rhymeInfo');
     resultDiv.innerHTML = '';
     
     // Process all words in the text
@@ -160,7 +249,6 @@ function updateResults() {
                 if (cleanWord && rhymeGroups.hasOwnProperty(wordIndex)) {
                     const color = getColorForRhymeGroup(rhymeGroups[wordIndex]);
                     span.style.backgroundColor = color;
-                    // Add hover effect to show rhyme group
                     span.setAttribute('data-rhyme-group', rhymeGroups[wordIndex]);
                     span.addEventListener('mouseover', (e) => {
                         const group = e.target.getAttribute('data-rhyme-group');
@@ -193,4 +281,27 @@ function updateResults() {
     });
 }
 
-document.getElementById('textInput').addEventListener('input', updateResults);
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+    document.getElementById('saveToFile').addEventListener('click', saveToFile);
+    document.getElementById('saveToLocal').addEventListener('click', saveToLocalStorage);
+    document.getElementById('loadSaved').addEventListener('click', loadSavedPoems);
+    document.getElementById('textInput').addEventListener('input', updateResults);
+    
+    // Modal close button
+    document.querySelector('.close').addEventListener('click', function() {
+        document.getElementById('savedPoemsModal').style.display = 'none';
+    });
+    
+    // Click outside modal to close
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('savedPoemsModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Initial results update if there's any text
+    updateResults();
+});

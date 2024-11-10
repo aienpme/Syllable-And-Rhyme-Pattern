@@ -3,14 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poetry Helper - Syllables & Rhymes</title>
+    <title>Syllable Counter</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Poetry Helper</h1>
+        <h1>Syllable Counter</h1>
+        <div class="controls">
+            <input type="file" id="fileInput" accept=".txt" class="file-input" />
+            <label for="fileInput" class="control-button upload">Upload Text</label>
+            <button id="saveToFile" class="control-button save">Save to File</button>
+            <button id="saveToLocal" class="control-button store">Save to Browser</button>
+            <button id="loadSaved" class="control-button load">Load Saved</button>
+        </div>
         <textarea id="textInput" placeholder="Enter your text here (one line per verse)..."></textarea>
         <div id="result"></div>
+        <div id="savedPoemsModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Saved Poems</h2>
+                <div id="savedPoemsList"></div>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

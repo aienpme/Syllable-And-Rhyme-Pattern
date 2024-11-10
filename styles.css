@@ -16,6 +16,37 @@ body {
 h1 {
     color: #333;
     text-align: center;
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.control-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: opacity 0.2s;
+}
+
+.control-button:hover {
+    opacity: 0.9;
+}
+
+.upload { background-color: #28a745; }
+.save { background-color: #17a2b8; }
+.store { background-color: #6f42c1; }
+.load { background-color: #fd7e14; }
+
+.file-input {
+    display: none;
 }
 
 textarea {
@@ -37,14 +68,13 @@ textarea {
 .line-result {
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
+    padding: 8px 0;
     border-bottom: 1px solid #eee;
 }
 
 .syllable-count {
     font-weight: bold;
     color: #2c5282;
-    margin-left: 10px;
 }
 
 .word {
@@ -52,25 +82,76 @@ textarea {
     padding: 2px 5px;
     margin: 0 2px;
     border-radius: 3px;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 24px;
     cursor: pointer;
+    color: #666;
 }
 
-.word:hover {
-    filter: brightness(0.9);
+.close:hover {
+    color: #333;
 }
 
-.rhyme-info {
-    margin-top: 20px;
+.saved-poem-item {
     padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.rhyme-pattern {
-    font-family: monospace;
-    padding: 2px 6px;
-    border-radius: 3px;
+.saved-poem-item button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
     margin-left: 8px;
+}
+
+.saved-poem-item .load-button {
+    background-color: #fd7e14;
+}
+
+.saved-poem-item .delete-button {
+    background-color: #dc3545;
+}
+
+.saved-poem-date {
+    color: #666;
     font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.saved-poem-preview {
+    color: #333;
+    margin-top: 4px;
 }
